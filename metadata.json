@@ -1,0 +1,6 @@
+{
+  "name": "Panda CBSE Class 6 Companion",
+  "description": "NCERT Math & Science study companion, Yoga Deck, and supportive mood tracker for Class 6 students with Panda the Panda.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
