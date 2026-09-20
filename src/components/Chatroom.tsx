@@ -239,7 +239,7 @@ ${sections.join('\n\n')}
       const spokenText = transcript.trim();
       setInput(spokenText);
 
-      if (/\\bhey\\s+panda\\b/i.test(spokenText)) {
+      if (/\bhey\s+panda\b/i.test(spokenText)) {
         setTimeout(() => {
           fetchMorningBulletin();
         }, 250);
