@@ -62,6 +62,7 @@ export default function Chatroom() {
   const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const morningBulletinLoadingRef = useRef(false);
   const morningBulletinDateRef = useRef<string | null>(localStorage.getItem('bhirithi-morning-bulletin-date'));
+  const morningBulletinCacheKey = 'bhirithi-morning-bulletin-v1';
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // Pep consent state
@@ -128,7 +129,33 @@ export default function Chatroom() {
 
   const fetchMorningBulletin = async () => {
     const today = new Date().toISOString().slice(0, 10);
-    if (morningBulletinLoadingRef.current || morningBulletinDateRef.current === today) return;
+    if (morningBulletinLoadingRef.current) return;
+
+    // Reuse the complete bulletin for the same day instead of calling Gemini again.
+    const cached = localStorage.getItem(morningBulletinCacheKey);
+    if (cached) {
+      try {
+        const cachedBulletin = JSON.parse(cached);
+        if (cachedBulletin?.date === today) {
+          morningBulletinDateRef.current = today;
+          const cachedText = cachedBulletin.renderedText as string | undefined;
+          if (cachedText && !messages.some(m => m.id.startsWith('morning-bulletin-'))) {
+            setMessages(prev => [...prev, {
+              id: 'morning-bulletin-cached-' + today,
+              sender: 'panda',
+              text: cachedText,
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              role: 'friend'
+            }]);
+            speakPanda(cachedText);
+          }
+          return;
+        }
+      } catch {
+        localStorage.removeItem(morningBulletinCacheKey);
+      }
+    }
+
     morningBulletinLoadingRef.current = true;
     try {
       const response = await fetch('/api/morning-bulletin');
@@ -157,6 +184,11 @@ ${sections.join('\n\n')}
       setMessages(prev => [...prev, pandaMsg]);
       morningBulletinDateRef.current = today;
       localStorage.setItem('bhirithi-morning-bulletin-date', today);
+      localStorage.setItem(morningBulletinCacheKey, JSON.stringify({
+        date: today,
+        renderedText: text,
+        savedAt: new Date().toISOString()
+      }));
       speakPanda(text);
     } catch (error) {
       console.warn('Morning bulletin unavailable:', error);
