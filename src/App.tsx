@@ -7,6 +7,7 @@ import Chatroom from './components/Chatroom';
 import StudyDeck from './components/StudyDeck';
 import StudyMedia from './components/StudyMedia';
 import YogaStudio from './components/YogaStudio';
+import YogaRadar from './components/YogaRadar';
 import Scheduler from './components/Scheduler';
 import MoodParentHub from './components/MoodParentHub';
 import RescueBeacon from './components/RescueBeacon';
@@ -100,7 +101,7 @@ export default function App() {
           {activeTab === 'chat' && <Chatroom />}
           {activeTab === 'study' && <StudyDeck />}
           {activeTab === 'media' && <StudyMedia />}
-          {activeTab === 'yoga' && <YogaStudio />}
+          {activeTab === 'yoga' && <><YogaStudio /><YogaRadar /></>}
           {activeTab === 'routine' && <Scheduler />}
           {activeTab === 'parent' && <MoodParentHub />}
         </div>
