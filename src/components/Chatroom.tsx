@@ -200,6 +200,11 @@ ${sections.join('\n\n')}
   };
 
   const toggleListening = () => {
+    // Browser/OS privacy boundary: never request microphone access from an insecure context.
+    if (!window.isSecureContext) {
+      setVoiceSupported(false);
+      return;
+    }
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Recognition) {
       setVoiceSupported(false);
@@ -349,6 +354,14 @@ ${sections.join('\n\n')}
       const approved = window.confirm("Panda Camera is off by default. Allow Bhirithi to open the camera for this session?");
       if (!approved) return;
       setCameraConsent(true);
+    }
+
+    // Browser/OS privacy boundary: camera access is only attempted in a secure context.
+    if (!window.isSecureContext) {
+      setCameraError("Camera access requires HTTPS (or localhost during development). Panda will not bypass this browser security requirement.");
+      setIsCameraOpen(true);
+      setCameraActive(false);
+      return;
     }
 
     setIsCameraOpen(true);
