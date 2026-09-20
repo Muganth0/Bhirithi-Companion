@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, Smile, ShieldAlert, Heart, Zap, User, Paperclip, Camera, X, FileText, Check, RotateCcw, CameraOff, Sparkle } from 'lucide-react';
+import { Send, Sparkles, Smile, ShieldAlert, Heart, Zap, User, Paperclip, Camera, X, FileText, Check, RotateCcw, CameraOff, Sparkle, Mic, MicOff, Volume2, VolumeX, Square, Play } from 'lucide-react';
 import { ChatMessage, PandaRole } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -8,6 +8,33 @@ interface AttachedFileInfo {
   type: string;
   base64: string;
   previewUrl?: string;
+}
+
+interface SpeechRecognitionEventLike extends Event {
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionLike {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  onstart: (() => void) | null;
+  onend: (() => void) | null;
+  onerror: ((event: any) => void) | null;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+
+interface SpeechRecognitionConstructor {
+  new (): SpeechRecognitionLike;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  }
 }
 
 export default function Chatroom() {
@@ -23,6 +50,15 @@ export default function Chatroom() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Panda Voice: browser-native speech recognition + speech synthesis.
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(true);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const lastSpokenTextRef = useRef<string>('');
+  const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // Pep consent state
@@ -40,6 +76,112 @@ export default function Chatroom() {
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState('');
+
+  const getSpeechLocale = () => {
+    const preferred = navigator.language?.toLowerCase() || 'en-in';
+    if (preferred.startsWith('ta')) return 'ta-IN';
+    if (preferred.startsWith('te')) return 'te-IN';
+    if (preferred.startsWith('hi')) return 'hi-IN';
+    return 'en-IN';
+  };
+
+  const speakPanda = (text: string) => {
+    if (!voiceEnabled || !('speechSynthesis' in window) || !text.trim()) return;
+    window.speechSynthesis.cancel();
+
+    const cleanText = text.replace(/https?:\/\/\S+/g, '').trim();
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = getSpeechLocale();
+    utterance.rate = 0.92;
+    utterance.pitch = 1.08;
+    utterance.volume = 1;
+    speechUtteranceRef.current = utterance;
+
+    const voices = window.speechSynthesis.getVoices();
+    const locale = utterance.lang.toLowerCase();
+    const preferredVoice =
+      voices.find(v => v.lang.toLowerCase() === locale) ||
+      voices.find(v => v.lang.toLowerCase().startsWith(locale.split('-')[0])) ||
+      voices.find(v => /en-in/i.test(v.lang)) ||
+      voices.find(v => /english/i.test(v.name));
+    if (preferredVoice) utterance.voice = preferredVoice;
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    lastSpokenTextRef.current = cleanText;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const stopSpeaking = () => {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    setIsSpeaking(false);
+  };
+
+  const replayLastPandaVoice = () => {
+    if (lastSpokenTextRef.current) speakPanda(lastSpokenTextRef.current);
+  };
+
+  const toggleListening = () => {
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!Recognition) {
+      setVoiceSupported(false);
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+
+    const recognition = new Recognition();
+    recognition.lang = getSpeechLocale();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => {
+      setIsListening(false);
+      recognitionRef.current = null;
+    };
+    recognition.onerror = (event: any) => {
+      console.warn('Panda voice input error:', event?.error);
+      setIsListening(false);
+      recognitionRef.current = null;
+    };
+    recognition.onresult = (event: SpeechRecognitionEventLike) => {
+      let transcript = '';
+      for (let i = event.resultIndex ?? 0; i < event.results.length; i += 1) {
+        transcript += event.results[i][0]?.transcript || '';
+      }
+      setInput(transcript.trim());
+    };
+
+    recognitionRef.current = recognition;
+    try {
+      recognition.start();
+    } catch {
+      setIsListening(false);
+      recognitionRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    setVoiceSupported(Boolean(Recognition) || 'speechSynthesis' in window);
+
+    return () => {
+      recognitionRef.current?.stop();
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    };
+  }, []);
+
+  useEffect(() => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.getVoices();
+    }
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -234,6 +376,7 @@ export default function Chatroom() {
       };
 
       setMessages(prev => [...prev, pandaMsg]);
+      speakPanda(data.text);
     } catch (err) {
       console.error(err);
       
@@ -243,7 +386,7 @@ export default function Chatroom() {
         partner: "You have got this, Bhirithi! After your 4th-place finish at the 56th KVS National Sports Meet, you already know what steady practice and determination feel like. Let's solve just ONE more Class 6 Math question right now. I know you can do it! 💪✨",
         teacher: "Math and science are like a starry sky, Bhirithi. Did you know Roman numeral L represents 50, and proteins are bodybuilders? Let's check some chapter questions!",
         mom: "Panda says: make sure your back is straight at your desk, Bhirithi! 🎋 Have you eaten a healthy fruit snack? Tell Viransh to join you for an apple!",
-        yoga: "Inhale slowly for four seconds, Bhirithi... hold... and breathe out like swinging tree leaves. As our National Champion Yoga expert, keep your focus pristine and show us that safe alignment! 🧘🎋"
+        yoga: "Inhale slowly for four seconds, Bhirithi... hold... and breathe out like swinging tree leaves. As an accomplished young competitive Yoga student, keep your focus pristine and always use safe alignment! 🧘🎋"
       };
 
       // Customized visual response text for fallbacks
@@ -261,6 +404,7 @@ export default function Chatroom() {
       };
 
       setMessages(prev => [...prev, pandaMsg]);
+      speakPanda(fallbackText);
     } finally {
       setIsLoading(false);
     }
@@ -363,6 +507,33 @@ export default function Chatroom() {
           </div>
 
           <div className="flex gap-2 items-center">
+            {/* Panda Voice Controls */}
+            <button
+              type="button"
+              onClick={() => {
+                if (isSpeaking) {
+                  stopSpeaking();
+                } else {
+                  setVoiceEnabled(prev => !prev);
+                }
+              }}
+              className={`flex items-center gap-1.5 font-bold text-xs px-3 py-2 rounded-full cursor-pointer shadow-sm transition active:scale-95 border-2 ${voiceEnabled ? 'bg-[#EEF9F2] text-[#237A4A] border-[#BCE8CC]' : 'bg-slate-50 text-slate-500 border-slate-200'}`}
+              title={isSpeaking ? "Stop Panda's voice" : voiceEnabled ? "Mute Panda voice" : "Enable Panda voice"}
+            >
+              {isSpeaking ? <Square className="w-3.5 h-3.5 fill-current" /> : voiceEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+              <span>{isSpeaking ? 'Stop Voice' : voiceEnabled ? 'Panda Voice' : 'Voice Off'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={replayLastPandaVoice}
+              disabled={!lastSpokenTextRef.current || !voiceSupported}
+              className="p-2 bg-[#FFF4EC] hover:bg-[#FFE6D3] disabled:opacity-40 text-[#FF6A1A] rounded-full cursor-pointer transition active:scale-95"
+              title="Replay Panda's last spoken reply"
+            >
+              <Play className="w-3.5 h-3.5 fill-current" />
+            </button>
+
             {/* Quick pep block trigger */}
             <button
               id="pep-consent-trigger"
@@ -394,6 +565,16 @@ export default function Chatroom() {
               </button>
             );
           })}
+        </div>
+
+        <div className="mt-2 flex items-center justify-between gap-2 px-2 text-[9px] font-bold uppercase tracking-wider">
+          <div className={`flex items-center gap-1.5 ${isListening ? 'text-rose-500' : isSpeaking ? 'text-emerald-600' : 'text-[#A68F81]'}`}>
+            {isListening ? <Mic className="w-3 h-3 animate-pulse" /> : isSpeaking ? <Volume2 className="w-3 h-3 animate-pulse" /> : <Sparkle className="w-3 h-3" />}
+            <span>{isListening ? 'Listening to Bhirithi…' : isSpeaking ? 'Panda is speaking…' : voiceEnabled ? 'Voice ready' : 'Voice muted'}</span>
+          </div>
+          {!voiceSupported && (
+            <span className="text-amber-600 normal-case tracking-normal">Mic voice input is not supported in this browser</span>
+          )}
         </div>
       </div>
 
@@ -658,6 +839,18 @@ export default function Chatroom() {
           accept="image/*,.pdf,.doc,.docx,.txt"
         />
 
+        {/* Panda Voice Mic Trigger */}
+        <button
+          type="button"
+          onClick={toggleListening}
+          disabled={!voiceSupported}
+          className={`p-2.5 rounded-full cursor-pointer transition active:scale-95 flex-shrink-0 ${isListening ? 'bg-rose-100 text-rose-600 ring-2 ring-rose-300 animate-pulse' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-600'} disabled:opacity-40`}
+          title={isListening ? 'Stop listening' : 'Speak to Panda'}
+          aria-label={isListening ? 'Stop listening' : 'Speak to Panda'}
+        >
+          {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+        </button>
+
         {/* Live Camera Explore Trigger */}
         <button
           type="button"
@@ -673,7 +866,7 @@ export default function Chatroom() {
             type="text"
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder={attachedFile ? "Type your questions or doubts about this file..." : "Ask Panda a question or explain your doubt..."}
+            placeholder={isListening ? "Listening… speak clearly to Panda" : attachedFile ? "Type your questions or doubts about this file..." : "Ask Panda a question or explain your doubt..."}
             className="w-full pl-5 pr-12 py-3 rounded-full border-2 border-[#FFE0D0] bg-[#FFFBF9] outline-none text-xs focus:bg-white focus:border-[#FFB390] transition-all duration-200 text-[#4D3A2F] font-bold placeholder-[#CDA695]"
           />
           <div className="absolute right-4 top-3 text-lg opacity-40"><Sparkle className="w-4 h-4 text-orange-300 fill-orange-300" /></div>
