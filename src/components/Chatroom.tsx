@@ -60,6 +60,8 @@ export default function Chatroom() {
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const lastSpokenTextRef = useRef<string>('');
   const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const morningBulletinLoadingRef = useRef(false);
+  const morningBulletinDateRef = useRef<string | null>(localStorage.getItem('bhirithi-morning-bulletin-date'));
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // Pep consent state
@@ -124,6 +126,45 @@ export default function Chatroom() {
     if (lastSpokenTextRef.current) speakPanda(lastSpokenTextRef.current);
   };
 
+  const fetchMorningBulletin = async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    if (morningBulletinLoadingRef.current || morningBulletinDateRef.current === today) return;
+    morningBulletinLoadingRef.current = true;
+    try {
+      const response = await fetch('/api/morning-bulletin');
+      if (!response.ok) throw new Error('Morning bulletin unavailable');
+      const bulletin = await response.json();
+      const sections = [
+        ...(bulletin.sports || []).slice(0, 5).map((item: any) => `🏅 SPORTS — ${item.headline}. ${item.summary}`),
+        ...(bulletin.science || []).slice(0, 2).map((item: any) => `🔬 SCIENCE — ${item.headline}. ${item.summary}`),
+        ...(bulletin.technology || []).slice(0, 2).map((item: any) => `💻 TECHNOLOGY — ${item.headline}. ${item.summary}`),
+        ...(bulletin.majorNews || []).slice(0, 1).map((item: any) => `📰 MAIN NEWS — ${item.headline}. ${item.summary}`)
+      ];
+      const text = `${bulletin.greeting || "Good morning, Bhirithi! Panda has your morning bulletin ready."}
+
+Here is today's fresh bulletin, with extra bamboo focus on sports, science and technology.
+
+${sections.join('\n\n')}
+
+🐼 Panda's pick: ${bulletin.pandaPick || "Stay curious, train safely and have a wonderful day!"}`;
+      const pandaMsg: ChatMessage = {
+        id: 'morning-bulletin-' + Date.now(),
+        sender: 'panda',
+        text,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        role: 'friend'
+      };
+      setMessages(prev => [...prev, pandaMsg]);
+      morningBulletinDateRef.current = today;
+      localStorage.setItem('bhirithi-morning-bulletin-date', today);
+      speakPanda(text);
+    } catch (error) {
+      console.warn('Morning bulletin unavailable:', error);
+    } finally {
+      morningBulletinLoadingRef.current = false;
+    }
+  };
+
   const toggleListening = () => {
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Recognition) {
@@ -156,7 +197,14 @@ export default function Chatroom() {
       for (let i = event.resultIndex ?? 0; i < event.results.length; i += 1) {
         transcript += event.results[i][0]?.transcript || '';
       }
-      setInput(transcript.trim());
+      const spokenText = transcript.trim();
+      setInput(spokenText);
+
+      if (/\\bhey\\s+panda\\b/i.test(spokenText)) {
+        setTimeout(() => {
+          fetchMorningBulletin();
+        }, 250);
+      }
     };
 
     recognitionRef.current = recognition;
