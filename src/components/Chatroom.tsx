@@ -11,6 +11,7 @@ interface AttachedFileInfo {
 }
 
 interface SpeechRecognitionEventLike extends Event {
+  resultIndex?: number;
   results: SpeechRecognitionResultList;
 }
 
