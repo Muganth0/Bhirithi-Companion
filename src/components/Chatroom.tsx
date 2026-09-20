@@ -16,7 +16,7 @@ export default function Chatroom() {
     {
       id: 'init-1',
       sender: 'panda',
-      text: 'Bamboo-hello, Bhirithi! 🐼 I am your cozy Panda companion! Gigantic congratulations on reaching the National Yoga Competitions! 🎉 Give your brother Viransh a huge high-five too! How are you feeling today? Tap a bubbly button below to toggle my role, upload a file/math doubt, or snap an idea snapshot using our Exploration Camera!',
+      text: 'Bamboo-hello, Bhirithi! 🐼 I am your cozy Panda companion! Gigantic congratulations on your 4th-place finish at the 56th KVS National Sports Meet! 🏅🎉 Give your brother Viransh a huge high-five too! How are you feeling today? Tap a bubbly button below to toggle my role, upload a file/math doubt, or snap an idea snapshot using our Exploration Camera!',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       role: 'friend'
     }
@@ -240,7 +240,7 @@ export default function Chatroom() {
       // Fallback friendly local role responses if server is starting or API key not verified yet
       const fallbacks: Record<PandaRole, string> = {
         friend: "Roll with the bamboo, Bhirithi! 🐾 I am feeling super-duper cozy. Give Viransh a happy wave! Make sure you are taking study breaks! What fun game did you play at school today?",
-        partner: "You have got this, Bhirithi! As a National Yoga champion, you know all about concentration and steady determination. Let's solve just ONE more Class 6 Math question right now. I know you can do it! 💪✨",
+        partner: "You have got this, Bhirithi! After your 4th-place finish at the 56th KVS National Sports Meet, you already know what steady practice and determination feel like. Let's solve just ONE more Class 6 Math question right now. I know you can do it! 💪✨",
         teacher: "Math and science are like a starry sky, Bhirithi. Did you know Roman numeral L represents 50, and proteins are bodybuilders? Let's check some chapter questions!",
         mom: "Panda says: make sure your back is straight at your desk, Bhirithi! 🎋 Have you eaten a healthy fruit snack? Tell Viransh to join you for an apple!",
         yoga: "Inhale slowly for four seconds, Bhirithi... hold... and breathe out like swinging tree leaves. As our National Champion Yoga expert, keep your focus pristine and show us that safe alignment! 🧘🎋"
