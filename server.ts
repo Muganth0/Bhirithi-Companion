@@ -211,6 +211,123 @@ You MUST format the response strictly as a JSON array (no other text, just JSON)
   }
 });
 
+// Autonomous Yoga Competition + News Radar powered by Gemini Google Search grounding
+app.get("/api/yoga-updates", async (_req, res) => {
+  try {
+    const ai = getGeminiClient();
+    const today = new Date().toISOString().slice(0, 10);
+
+    const prompt = `You are the live research assistant for Bhirithi's private Yoga Radar.
+Today's date is ${today}. Search the live web now. Do not rely on memory.
+
+Find:
+1. Upcoming yoga / yogasana competitions that could be relevant to a school-age competitive yoga student in India, with special attention to India, Tamil Nadu/Chennai, KVS/school competitions, and national or international junior events.
+2. Recent credible yoga/yogasana sports news that can be used as positive, age-appropriate motivation.
+
+SOURCE RULES:
+- Prefer official organizers, federations, government departments, KVS, Ministry of AYUSH, Ministry of Youth Affairs & Sports, recognized state associations, and official event pages.
+- Search multiple sources and cross-check dates when possible.
+- Never invent an event, date, venue, eligibility rule, registration deadline, result, or URL.
+- If eligibility for Bhirithi's exact age/category is not stated by the source, do not claim that she is eligible. Say that eligibility must be checked with the coach/organizer.
+- Exclude events whose date is already past.
+- For news, prefer items from the last 90 days when possible.
+- Keep motivation factual: do not invent athlete stories or quotes.
+
+Return ONLY valid JSON with this exact shape:
+{
+  "competitions": [
+    {
+      "title": "event name",
+      "date": "confirmed date or date range, otherwise empty string",
+      "location": "venue/city/state or online",
+      "organizer": "organizer name",
+      "summary": "2 short factual sentences",
+      "relevance": "1 short encouraging sentence for Bhirithi without claiming eligibility",
+      "sourceUrl": "exact source URL from a grounded result",
+      "sourceName": "source/publisher name",
+      "status": "upcoming"
+    }
+  ],
+  "news": [
+    {
+      "title": "news headline",
+      "date": "publication date or event date",
+      "location": "",
+      "organizer": "",
+      "summary": "2 short factual sentences",
+      "relevance": "1 short age-appropriate encouraging sentence for Bhirithi",
+      "sourceUrl": "exact source URL from a grounded result",
+      "sourceName": "source/publisher name",
+      "status": "recent"
+    }
+  ]
+}
+
+Return up to 6 competitions and up to 6 news items. If fewer are reliably verified, return fewer. Every item MUST have a real https URL returned by web grounding.`;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-flash",
+      contents: prompt,
+      config: {
+        tools: [{ googleSearch: {} }],
+        responseMimeType: "application/json",
+      },
+    });
+
+    let parsed: any = JSON.parse((response.text || "{}").trim());
+    const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+    const groundedSources = groundingChunks
+      .map((chunk: any) => chunk?.web)
+      .filter((web: any) => web?.uri)
+      .map((web: any) => ({ uri: web.uri, title: web.title || "Grounded web source" }));
+
+    const validHttps = (value: unknown) => typeof value === "string" && /^https:\/\//i.test(value);
+    const clean = (items: any[], status: "upcoming" | "recent") => {
+      const seen = new Set<string>();
+      return (Array.isArray(items) ? items : [])
+        .filter((item: any) => validHttps(item?.sourceUrl) && item?.title && item?.summary)
+        .filter((item: any) => {
+          const key = item.sourceUrl;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        })
+        .slice(0, 6)
+        .map((item: any) => ({
+          title: String(item.title).slice(0, 180),
+          date: String(item.date || ""),
+          location: String(item.location || ""),
+          organizer: String(item.organizer || ""),
+          summary: String(item.summary).slice(0, 500),
+          relevance: String(item.relevance || "Keep training with patience, consistency and safe practice.").slice(0, 240),
+          sourceUrl: item.sourceUrl,
+          sourceName: String(item.sourceName || "Verified web source").slice(0, 100),
+          status
+        }));
+    };
+
+    const competitions = clean(parsed?.competitions, "upcoming");
+    const news = clean(parsed?.news, "recent");
+
+    // Keep a compact trace of grounded sources so the UI can remain transparent.
+    return res.json({
+      competitions,
+      news,
+      generatedAt: new Date().toISOString(),
+      groundedSources: groundedSources.slice(0, 20),
+      note: "Updates are generated from a live Google-grounded web search. Final eligibility and registration details should be confirmed with the coach or organizer."
+    });
+  } catch (error: any) {
+    console.error("Yoga Radar search error:", error?.message || error);
+    return res.status(503).json({
+      error: "Live yoga search is temporarily unavailable.",
+      competitions: [],
+      news: [],
+      generatedAt: new Date().toISOString()
+    });
+  }
+});
+
 // Automatic parent report draft generator powered by Gemini
 app.post("/api/generate-report", async (req, res) => {
   try {
