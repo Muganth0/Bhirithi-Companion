@@ -98,18 +98,28 @@ export default function Chatroom() {
     const cleanText = text.replace(/https?:\/\/\S+/g, '').trim();
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.lang = getSpeechLocale();
-    utterance.rate = 0.92;
-    utterance.pitch = 1.08;
+    // Panda's voice profile: cheerful, youthful, friendly, and Indian-English first.
+    // Browser speech voices vary by device, so we prefer an Indian-English female voice
+    // when available and gracefully fall back to the browser's closest English voice.
+    utterance.rate = 0.98;
+    utterance.pitch = 1.18;
     utterance.volume = 1;
     speechUtteranceRef.current = utterance;
 
     const voices = window.speechSynthesis.getVoices();
     const locale = utterance.lang.toLowerCase();
+    const baseLocale = locale.split('-')[0];
+    const femaleVoiceHints = /female|woman|girl|heera|priya|neerja|raveena|veena|aarti|kavya|aditi|sangeeta/i;
+
     const preferredVoice =
-      voices.find(v => v.lang.toLowerCase() === locale) ||
-      voices.find(v => v.lang.toLowerCase().startsWith(locale.split('-')[0])) ||
+      voices.find(v => v.lang.toLowerCase() === locale && femaleVoiceHints.test(v.name)) ||
+      voices.find(v => v.lang.toLowerCase().startsWith(baseLocale) && femaleVoiceHints.test(v.name)) ||
+      voices.find(v => /en-in/i.test(v.lang) && femaleVoiceHints.test(v.name)) ||
       voices.find(v => /en-in/i.test(v.lang)) ||
+      voices.find(v => v.lang.toLowerCase() === locale) ||
+      voices.find(v => v.lang.toLowerCase().startsWith(baseLocale)) ||
       voices.find(v => /english/i.test(v.name));
+
     if (preferredVoice) utterance.voice = preferredVoice;
 
     utterance.onstart = () => setIsSpeaking(true);
