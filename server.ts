@@ -328,6 +328,90 @@ Return up to 6 competitions and up to 6 news items. If fewer are reliably verifi
   }
 });
 
+// Bhirithi's age-appropriate morning news bulletin, generated from a fresh web search.
+// The bulletin prioritizes sports, science and technology, while also including a small
+// selection of major general-news items suitable for a Class 6 student.
+app.get("/api/morning-bulletin", async (_req, res) => {
+  try {
+    const ai = getGeminiClient();
+    const today = new Date().toISOString().slice(0, 10);
+
+    const prompt = `You are Panda the Panda's morning news editor for Bhirithi Sri, a CBSE Class 6 student in India.
+Today's date is ${today}. Search the live web now. Do not rely on memory.
+
+Create a short, child-friendly morning bulletin for Bhirithi.
+
+EDITORIAL PRIORITY:
+1. SPORTS — strongest focus, especially Indian sports, school/youth sports, yoga/yogasana, major competitions and important results.
+2. SCIENCE — important discoveries, space, environment, health/science education and research explained simply.
+3. TECHNOLOGY — meaningful AI, computing, robotics, gadgets, cybersecurity/safety and other technology developments.
+4. MAJOR NEWS — only a small number of significant India/world developments that are appropriate for a Class 6 student. Keep descriptions factual, calm and non-sensational. If a topic involves conflict, crime, disaster or other distressing material, summarize only the essential civic fact in gentle age-appropriate language or omit it if it is not necessary.
+
+SOURCE RULES:
+- Search the live web and prioritize reputable primary/official sources and established news organizations.
+- Prefer sources from India where appropriate, plus credible international sources for major global science, technology and sports developments.
+- Never invent a headline, result, date, person, quote, statistic or URL.
+- Do not include adult/graphic/sensational content.
+- Avoid celebrity gossip, rumors and clickbait.
+- Clearly distinguish reported facts from opinions.
+- Keep every story understandable to a Class 6 student.
+- Include publication/event date where available.
+- Use only real https URLs returned by web grounding.
+
+Return ONLY valid JSON:
+{
+  "date": "${today}",
+  "greeting": "one cheerful 1-sentence Panda greeting",
+  "sports": [{"headline":"","date":"","summary":"","sourceName":"","sourceUrl":""}],
+  "science": [{"headline":"","date":"","summary":"","sourceName":"","sourceUrl":""}],
+  "technology": [{"headline":"","date":"","summary":"","sourceName":"","sourceUrl":""}],
+  "majorNews": [{"headline":"","date":"","summary":"","sourceName":"","sourceUrl":""}],
+  "pandaPick": "one short encouraging takeaway for Bhirithi"
+}
+
+Return 3-5 sports stories, 2-3 science stories, 2-3 technology stories and at most 2 major-news stories. Keep each summary to 1-2 short sentences.`;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-flash",
+      contents: prompt,
+      config: {
+        tools: [{ googleSearch: {} }],
+        responseMimeType: "application/json",
+      },
+    });
+
+    const parsed: any = JSON.parse((response.text || "{}").trim());
+    const validHttps = (value: unknown) => typeof value === "string" && /^https:\/\//i.test(value);
+    const cleanItems = (items: any[], max: number) => (Array.isArray(items) ? items : [])
+      .filter((item: any) => item?.headline && item?.summary && validHttps(item?.sourceUrl))
+      .slice(0, max)
+      .map((item: any) => ({
+        headline: String(item.headline).slice(0, 180),
+        date: String(item.date || ""),
+        summary: String(item.summary).slice(0, 420),
+        sourceName: String(item.sourceName || "Verified news source").slice(0, 100),
+        sourceUrl: item.sourceUrl
+      }));
+
+    return res.json({
+      date: String(parsed.date || today),
+      greeting: String(parsed.greeting || "Good morning, Bhirithi! Panda has your fresh news bamboo bundle ready. 🐼").slice(0, 240),
+      sports: cleanItems(parsed.sports, 5),
+      science: cleanItems(parsed.science, 3),
+      technology: cleanItems(parsed.technology, 3),
+      majorNews: cleanItems(parsed.majorNews, 2),
+      pandaPick: String(parsed.pandaPick || "Keep learning, training safely and staying curious today!").slice(0, 300),
+      generatedAt: new Date().toISOString()
+    });
+  } catch (error: any) {
+    console.error("Morning bulletin search error:", error?.message || error);
+    return res.status(503).json({
+      error: "Fresh morning news is temporarily unavailable.",
+      date: new Date().toISOString().slice(0, 10)
+    });
+  }
+});
+
 // Automatic parent report draft generator powered by Gemini
 app.post("/api/generate-report", async (req, res) => {
   try {
