@@ -80,6 +80,8 @@ export default function Chatroom() {
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState('');
+  const [cameraConsent, setCameraConsent] = useState(false);
+  const cameraTimeoutRef = useRef<number | null>(null);
 
   const getSpeechLocale = () => {
     const preferred = navigator.language?.toLowerCase() || 'en-in';
@@ -275,6 +277,7 @@ ${sections.join('\n\n')}
   // Clean up camera stream on unmount
   useEffect(() => {
     return () => {
+      if (cameraTimeoutRef.current) window.clearTimeout(cameraTimeoutRef.current);
       if (cameraStream) {
         cameraStream.getTracks().forEach(track => track.stop());
       }
@@ -340,6 +343,14 @@ ${sections.join('\n\n')}
 
   // Camera Management
   const startCamera = async () => {
+    // Camera never starts automatically. Require an explicit user action and
+    // browser permission every time the camera experience is opened.
+    if (!cameraConsent) {
+      const approved = window.confirm("Panda Camera is off by default. Allow Bhirithi to open the camera for this session?");
+      if (!approved) return;
+      setCameraConsent(true);
+    }
+
     setIsCameraOpen(true);
     setCameraActive(false);
     setCameraError('');
@@ -354,6 +365,9 @@ ${sections.join('\n\n')}
         videoRef.current.srcObject = stream;
       }
       setCameraActive(true);
+      // Safety timeout: stop the camera automatically after 2 minutes.
+      if (cameraTimeoutRef.current) window.clearTimeout(cameraTimeoutRef.current);
+      cameraTimeoutRef.current = window.setTimeout(() => stopCamera(), 2 * 60 * 1000);
     } catch (err: any) {
       console.error("In-app camera activation failed:", err);
       setCameraError("Camera device block or blocked access! Please verify and approve camera settings in your browser, or upload a local photo of your project.");
@@ -361,6 +375,10 @@ ${sections.join('\n\n')}
   };
 
   const stopCamera = () => {
+    if (cameraTimeoutRef.current) {
+      window.clearTimeout(cameraTimeoutRef.current);
+      cameraTimeoutRef.current = null;
+    }
     if (cameraStream) {
       cameraStream.getTracks().forEach(track => track.stop());
       setCameraStream(null);
