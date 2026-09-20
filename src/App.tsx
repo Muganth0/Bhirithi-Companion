@@ -39,18 +39,25 @@ export default function App() {
           <div className="inline-flex items-center gap-2 bg-[#FFEFE5] border border-[#FFD8C2] px-3.5 py-1 rounded-full">
             <span className="w-1.5 h-1.5 bg-[#FF6A1A] rounded-full animate-ping"></span>
             <span className="text-[11px] font-bold text-[#FF6A1A] uppercase tracking-wider block">
-              A Warm Virtual Companion for CBSE Class 6 Students
+              Bhirithi's Personal CBSE Class 6 Companion
             </span>
           </div>
           
           <h1 className="text-3xl sm:text-4xl font-bold text-[#3B2C24] tracking-tight font-display">
-            Panda Companion <span className="text-[#FF6A1A]">&</span> Dojo
+            Bhirithi's Panda Companion <span className="text-[#FF6A1A]">&</span> Dojo
           </h1>
           
           <p className="text-sm text-[#7D6B60] leading-relaxed font-normal">
-            Breathe joy into NCERT homework, regional yoga poses, daily observational check-ins, 
-            and friendly home-school parent updates with your cozy daily coach!
+            A private learning and training companion built around Bhirithi's NCERT studies, yoga journey, daily routines, wellbeing check-ins, and recent national achievement.
           </p>
+        </div>
+
+        <div className="flex items-center gap-3 border-2 border-[#FFD56B] bg-[#FFF9EC] px-4 py-3 rounded-[20px] shadow-sm relative z-10">
+          <span className="text-3xl">🏅</span>
+          <div>
+            <span className="text-[9px] uppercase font-bold tracking-wider text-amber-700 block">Recent National Achievement</span>
+            <span className="font-bold text-sm text-[#5D4E41] block">4th Place · 56th KVS National Sports Meet</span>
+          </div>
         </div>
 
         <div className="flex items-center gap-4 border-2 border-[#FFDEC4] bg-[#FFFBF7] p-4 rounded-[20px] shadow-sm transform hover:rotate-2 transition relative z-10">
