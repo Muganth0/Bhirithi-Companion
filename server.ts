@@ -8,7 +8,37 @@ import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 
 const app = express();
-app.use(express.json());
+// Security baseline: reject oversized JSON/image payloads and add browser hardening headers.
+app.use(express.json({ limit: "7mb" }));
+app.disable("x-powered-by");
+app.use((_req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "camera=(self), microphone=(self), geolocation=()");
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  next();
+});
+
+// Lightweight per-IP request guard. This is intentionally conservative and resets
+// periodically; production deployments should also enforce limits at the hosting edge.
+const requestWindows = new Map<string, { started: number; count: number }>();
+app.use((req, res, next) => {
+  const now = Date.now();
+  const key = req.ip || req.socket.remoteAddress || "unknown";
+  const windowMs = 60_000;
+  const maxRequests = 60;
+  const current = requestWindows.get(key);
+  if (!current || now - current.started >= windowMs) {
+    requestWindows.set(key, { started: now, count: 1 });
+    return next();
+  }
+  current.count += 1;
+  if (current.count > maxRequests) {
+    return res.status(429).json({ error: "Too many requests. Please wait a moment and try again." });
+  }
+  return next();
+});
 
 const PORT = 3000;
 
@@ -55,9 +85,21 @@ Keep your answers brief, engaging, highly structured, and highly encouraging. Us
 app.post("/api/chat", async (req, res) => {
   try {
     const { message, history, role, image } = req.body;
-    
-    if (!message) {
-      return res.status(400).json({ error: "Message is required." });
+
+    if (typeof message !== "string" || !message.trim() || message.length > 8000) {
+      return res.status(400).json({ error: "Message is required and must be 8,000 characters or fewer." });
+    }
+
+    if (Array.isArray(history) && history.length > 20) {
+      return res.status(400).json({ error: "Chat history is too large." });
+    }
+
+    // Accept only image types the UI explicitly supports and reject oversized base64 data.
+    if (image) {
+      const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+      if (!allowedImageTypes.has(image.mimeType) || typeof image.data !== "string" || image.data.length > 6_000_000) {
+        return res.status(400).json({ error: "Unsupported or oversized image attachment." });
+      }
     }
 
     const ai = getGeminiClient();
