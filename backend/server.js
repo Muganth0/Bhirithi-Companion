@@ -134,7 +134,7 @@ function looksLikeYoga(message) {
 
 function formatYogaContext() {
   if (!yogaSources) return "";
-  return "\\n\\nOFFICIAL YOGA SOURCES: " + JSON.stringify(yogaSources.sources);
+  return "\n\nOFFICIAL YOGA SOURCES: " + JSON.stringify(yogaSources.sources);
 }
 
 function looksLikeCurrentAffairs(message) {
@@ -176,11 +176,11 @@ app.post("/v1/chat", async (req, res) => {
     contents.push({ role: "user", parts: [{ text: message }] });
 
     const prompt = shouldSearch
-      ? `Answer the student's current-affairs/news question using live Google Search grounding. Search the web now and do not rely only on model memory.
+      ? `Answer the student's question using the supplied Bhirithi curriculum knowledge and, when enabled, live Google Search grounding.
 
 Question: ${message}
 
-Give a short Class 6-friendly answer. Clearly identify that the information is current as of today. Prefer primary sources and established news organizations. For political topics, describe the documented facts and competing positions neutrally without persuasion. Never invent a source.`
+If this is a syllabus/learning question, teach it at Class 6 level using the matched NCERT/KVS curriculum context. If it is a yoga/Yogasana/ASMITA/Khelo India/KVS competition question, verify current details against the official yoga sources supplied in the system context before stating dates, results, eligibility, categories or affiliations. If it is current affairs, clearly distinguish current verified facts from general background. Prefer primary/official sources and established news organizations. For political topics, describe documented facts and competing positions neutrally without persuasion. Never invent a source.`
       : message;
 
     const response = await ai.models.generateContent({
