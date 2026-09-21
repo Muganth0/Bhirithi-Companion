@@ -22,7 +22,9 @@
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
     "recharts": "^3.8.1",
-    "vite": "^6.2.3"
+    "vite": "^6.2.3",
+    "@pipecat-ai/client-js": "^1.13.1",
+    "@pipecat-ai/small-webrtc-transport": "^1.10.4"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
