@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import com.bhirithi.companion.BuildConfig
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -27,7 +28,7 @@ interface BhirithiRepository {
 }
 
 class NetworkBhirithiRepository(
-    private val baseUrl: String = "https://bhirithi-companion.vercel.app"
+    private val baseUrl: String = BuildConfig.BHIRITHI_BACKEND_URL
 ) : BhirithiRepository {
     private val section = MutableStateFlow("Panda")
     private val chatMessages = MutableStateFlow(
@@ -51,7 +52,7 @@ class NetworkBhirithiRepository(
         val student = PandaMessage("student-${System.currentTimeMillis()}", Sender.STUDENT, message)
         chatMessages.value = chatMessages.value + student
         try {
-            val connection = (URL("${baseUrl.trimEnd('/')}/api/chat").openConnection() as HttpURLConnection).apply {
+            val connection = (URL("${baseUrl.trimEnd('/')}/v1/chat").openConnection() as HttpURLConnection).apply {
                 requestMethod = "POST"
                 connectTimeout = 15_000
                 readTimeout = 30_000
@@ -72,6 +73,7 @@ class NetworkBhirithiRepository(
                 put("message", message)
                 put("history", history)
                 put("role", role)
+                put("useWebSearch", looksLikeCurrentAffairs(message))
             }.toString()
 
             connection.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
@@ -95,3 +97,7 @@ class NetworkBhirithiRepository(
         }
     }
 }
+
+private fun looksLikeCurrentAffairs(message: String): Boolean =
+    Regex("current affairs|today('?s)? news|today news|latest news|latest current|prime news|top news|breaking news|news today|what happened today|recent news|headlines today", RegexOption.IGNORE_CASE)
+        .containsMatchIn(message)
