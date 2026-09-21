@@ -72,7 +72,7 @@ Rules:
 }
 
 function normalizeText(value) {
-  return value.toLowerCase().normalize("NFKC").replace(/[–—]/g, "-").replace(/[^\\p{L}\\p{N}]+/gu, " ").trim();
+  return value.toLowerCase().normalize("NFKC").replace(/[–—]/g, "-").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 }
 
 function getSyllabusContext(message) {
