@@ -51,7 +51,7 @@ gcloud run deploy bhirithi-gemini-backend \
   --allow-unauthenticated
 ```
 
-Then configure GEMINI_API_KEY in the Cloud Run service environment/secrets.
+Create a Google Secret Manager secret named `gemini-api-key` containing the Gemini key, then grant the Cloud Run service identity permission to access that secret. The deployment workflow maps that secret to `GEMINI_API_KEY` at runtime.
 
 After deployment, set the Android Gradle property `bhirithiBackendUrl` to the service URL.
 
