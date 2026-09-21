@@ -19,6 +19,11 @@ try {
 } catch (error) {
   console.warn("Class 6 syllabus knowledge base unavailable:", error?.message || error);
 }
+try {
+  yogaSources = JSON.parse(fs.readFileSync(yogaSourcesPath, "utf8"));
+} catch (error) {
+  console.warn("Yoga source registry unavailable:", error?.message || error);
+}
 
 app.disable("x-powered-by");
 app.use(helmet({ crossOriginResourcePolicy: false }));
