@@ -68,3 +68,17 @@ The complete feature port is still in progress. The web application remains the 
 13. Complete phone/tablet/landscape/dark-mode test matrix.
 
 Do not declare the Android app production-ready until the validation sequence from the supplied Android development conditions has passed.
+
+
+## Native feature-port status
+
+The native Android app now includes:
+- **Panda Chat** using the existing Vercel `/api/chat` backend, with conversation history sent through the Repository layer.
+- **Panda voice input** using Android `SpeechRecognizer`, with microphone permission requested only when the user taps the mic.
+- **Panda voice output** using Android `TextToSpeech`, preferring an `en-IN` voice when the device provides one, with a cheerful Panda rate/pitch profile.
+- **Study, Yoga, Routine, Parents and Rescue** native navigation surfaces as the next feature-port destinations.
+- Responsive navigation using Material 3 adaptive navigation and reusable Compose layouts.
+
+The native voice implementation is an Android fallback/first native voice layer. The existing Pipecat prototype remains part of the web application; a production Pipecat Android realtime transport is not claimed as complete yet.
+
+The native Android client calls the existing deployed backend over HTTPS. Gemini/API credentials remain server-side and are not placed in the APK.
