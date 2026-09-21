@@ -42,6 +42,8 @@ app.use((req, res, next) => {
 
 const PORT = 3000;
 
+// Export the Express app so Vercel can run the API as a serverless function.\nexport { app };
+
 // Lazy initialization of GoogleGenAI to prevent startup crash if GEMINI_API_KEY is missing
 let aiClient: GoogleGenAI | null = null;
 function getGeminiClient(): GoogleGenAI {
@@ -513,7 +515,7 @@ With warm panda hugs,
 
 // Configure Vite middleware in development or serve static assets in production
 async function setupServer() {
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.VERCEL) return;\n\n  if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
