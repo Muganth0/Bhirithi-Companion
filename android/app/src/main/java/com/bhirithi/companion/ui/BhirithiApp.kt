@@ -52,54 +52,97 @@ private val sections = listOf(
 fun BhirithiApp(vm: BhirithiViewModel = viewModel()) {
     val selected by vm.selectedSection.collectAsStateWithLifecycle()
 
+    val sectionSubtitle = when (selected) {
+        "Panda" -> "Your friendly learning companion"
+        "Study" -> "Learn • practise • improve"
+        "Yoga" -> "Move • breathe • relax"
+        "Routine" -> "Plan your day with Panda"
+        "Parents" -> "Your learning journey at home"
+        "Rescue" -> "Safety tools and trusted help"
+        else -> "Your friendly learning companion"
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
+            Surface(
+                color = MaterialTheme.colorScheme.background,
+                shadowElevation = 0.dp
+            ) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                        .padding(horizontal = 18.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        modifier = Modifier.size(48.dp),
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text("🐼", style = MaterialTheme.typography.headlineSmall)
+                        }
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Column(Modifier.weight(1f)) {
                         Text(
                             "Hi, Bhirithi! 👋",
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.ExtraBold
                         )
                         Text(
-                            when (selected) {
-                                "Panda" -> "Let’s learn with Panda"
-                                "Study" -> "Your learning space"
-                                "Yoga" -> "Train safely with Panda"
-                                "Routine" -> "Your daily rhythm"
-                                "Parents" -> "School-home connection"
-                                "Rescue" -> "Safety and quick help"
-                                else -> "Let’s learn with Panda"
-                            },
-                            style = MaterialTheme.typography.labelMedium
+                            sectionSubtitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                },
-                actions = {
                     Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.secondaryContainer
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.surface,
+                        tonalElevation = 3.dp
                     ) {
-                        Text("🐼", modifier = Modifier.padding(10.dp))
+                        Text("✨", modifier = Modifier.padding(10.dp))
                     }
-                    Spacer(Modifier.width(12.dp))
                 }
-            )
+            }
         },
         bottomBar = {
-            NavigationBar(
-                tonalElevation = 4.dp
+            Surface(
+                color = MaterialTheme.colorScheme.surface,
+                shadowElevation = 12.dp
             ) {
-                sections.forEach { item ->
-                    NavigationBarItem(
-                        selected = selected == item.title,
-                        onClick = { vm.selectSection(item.title) },
-                        icon = { Text(item.emoji) },
-                        label = { Text(item.title, maxLines = 1) },
-                        alwaysShowLabel = true
-                    )
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 0.dp
+                ) {
+                    sections.forEach { item ->
+                        NavigationBarItem(
+                            selected = selected == item.title,
+                            onClick = { vm.selectSection(item.title) },
+                            icon = {
+                                Surface(
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = if (selected == item.title)
+                                        MaterialTheme.colorScheme.primaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.surface
+                                ) {
+                                    Text(item.emoji, modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp))
+                                }
+                            },
+                            label = {
+                                Text(
+                                    item.title,
+                                    maxLines = 1,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = if (selected == item.title) FontWeight.Bold else FontWeight.Normal
+                                )
+                            },
+                            alwaysShowLabel = true
+                        )
+                    }
                 }
             }
         }
@@ -445,23 +488,126 @@ private fun SimpleFeatureScreen(
     cards: List<Pair<String, String>>
 ) {
     Column(
-        Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(androidx.compose.foundation.rememberScrollState())
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Card(Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp)) {
-            Column(Modifier.padding(20.dp)) {
-                Text("$emoji $title", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(6.dp))
-                Text(subtitle, style = MaterialTheme.typography.bodyLarge)
-            }
-        }
-        cards.forEach { (heading, body) ->
-            Card(Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text(heading, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text(body, style = MaterialTheme.typography.bodyLarge)
+        // Learnity-inspired welcome/hero card: soft gradient, rounded corners,
+        // large section title and a friendly mascot without copying proprietary artwork.
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(28.dp),
+            color = MaterialTheme.colorScheme.primaryContainer,
+            tonalElevation = 1.dp
+        ) {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                MaterialTheme.colorScheme.primaryContainer,
+                                MaterialTheme.colorScheme.tertiaryContainer
+                            )
+                        )
+                    )
+                    .padding(20.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            title,
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                        Spacer(Modifier.height(5.dp))
+                        Text(
+                            subtitle,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        Surface(
+                            shape = RoundedCornerShape(14.dp),
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f)
+                        ) {
+                            Text(
+                                "Let's get started  →",
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp),
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Surface(
+                        modifier = Modifier.size(82.dp),
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(emoji, style = MaterialTheme.typography.displaySmall)
+                        }
+                    }
                 }
             }
         }
+
+        Text(
+            "Your learning journey",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.ExtraBold,
+            modifier = Modifier.padding(horizontal = 4.dp)
+        )
+
+        cards.forEachIndexed { index, (heading, body) ->
+            val icon = listOf("🎯", "🧠", "🌟", "📈", "💡", "🏆").getOrElse(index) { "✨" }
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(22.dp),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 2.dp
+            ) {
+                Row(
+                    Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        modifier = Modifier.size(52.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(icon, style = MaterialTheme.typography.titleLarge)
+                        }
+                    }
+                    Spacer(Modifier.width(14.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            heading,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            body,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Text(
+                        "›",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(8.dp))
     }
 }
+
