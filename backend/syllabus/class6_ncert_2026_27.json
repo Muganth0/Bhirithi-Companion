@@ -17,17 +17,16 @@
         "6th maths"
       ],
       "chapters": [
-        "Patterns in Mathematics",
-        "Lines and Angles",
+        "Large Numbers Around Us",
+        "Arithmetic Expressions",
+        "A Peek Beyond the Point",
+        "Expressions using Letter-Numbers",
+        "Parallel and Intersecting Lines",
         "Number Play",
-        "Data Handling and Presentation",
-        "Prime Time",
-        "Perimeter and Area",
-        "Fractions",
-        "Playing with Constructions",
-        "Symmetry",
-        "The Other Side of Zero"
-      ]
+        "A Tale of Three Intersecting Lines",
+        "Working with Fractions"
+      ],
+      "note": "Verified against NCERT Ganita Prakash reprint 2026-27."
     },
     {
       "subject": "Science",
