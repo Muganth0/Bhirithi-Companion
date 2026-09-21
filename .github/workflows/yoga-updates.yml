@@ -1,0 +1,49 @@
+name: Refresh Yoga & Yogasana Sources
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 1 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Refresh official source timestamps
+        run: |
+          python - <<'PY'
+          import json, urllib.request
+          from datetime import datetime, timezone
+          path = "backend/syllabus/yoga_sources_2026_27.json"
+          with open(path, encoding="utf-8") as f:
+              data = json.load(f)
+          checked = datetime.now(timezone.utc).isoformat()
+          for source in data["sources"]:
+              try:
+                  req = urllib.request.Request(source["url"], headers={"User-Agent":"Bhirithi-Companion-Official-Source-Refresh/1.0"})
+                  with urllib.request.urlopen(req, timeout=20) as response:
+                      source["lastCheckedUtc"] = checked
+                      source["httpStatus"] = response.status
+              except Exception as exc:
+                  source["lastCheckedUtc"] = checked
+                  source["httpStatus"] = None
+                  source["lastError"] = str(exc)[:200]
+          data["lastRefreshUtc"] = checked
+          with open(path, "w", encoding="utf-8") as f:
+              json.dump(data, f, ensure_ascii=False, indent=2)
+              f.write("\n")
+          PY
+
+      - name: Commit refresh metadata
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend/syllabus/yoga_sources_2026_27.json
+          git diff --cached --quiet || git commit -m "chore: refresh official yoga source metadata"
+          git push
