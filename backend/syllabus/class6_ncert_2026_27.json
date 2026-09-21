@@ -1,0 +1,194 @@
+{
+  "schemaVersion": "1.0",
+  "academicSession": "2026-27",
+  "board": "CBSE / NCERT",
+  "class": "6",
+  "note": "Kendriya Vidyalayas use NCERT/CBSE curriculum as the core reference; school-level term/month splits may vary.",
+  "subjects": [
+    {
+      "subject": "Mathematics",
+      "book": "Ganita Prakash",
+      "aliases": [
+        "ganita prakash",
+        "ganga prakash",
+        "ganitha prakash",
+        "ganita",
+        "class 6 maths",
+        "6th maths"
+      ],
+      "chapters": [
+        "Patterns in Mathematics",
+        "Lines and Angles",
+        "Number Play",
+        "Data Handling and Presentation",
+        "Prime Time",
+        "Perimeter and Area",
+        "Fractions",
+        "Playing with Constructions",
+        "Symmetry",
+        "The Other Side of Zero"
+      ]
+    },
+    {
+      "subject": "Science",
+      "book": "Curiosity",
+      "aliases": [
+        "curiosity",
+        "class 6 science",
+        "6th science"
+      ],
+      "chapters": [
+        "The Wonderful World of Science",
+        "Diversity in the Living World",
+        "Mindful Eating: A Path to a Healthy Body",
+        "Exploring Magnets",
+        "Measurement of Length and Motion",
+        "Materials Around Us",
+        "Temperature and its Measurement",
+        "A Journey through States of Water",
+        "Methods of Separation in Everyday Life",
+        "Living Creatures: Exploring their Characteristics",
+        "Nature's Treasures",
+        "Beyond Earth"
+      ]
+    },
+    {
+      "subject": "English",
+      "book": "Poorvi",
+      "aliases": [
+        "poorvi",
+        "class 6 english",
+        "6th english"
+      ],
+      "units": [
+        {
+          "unit": "Fables and Folk Tales",
+          "chapters": [
+            "A Bottle of Dew",
+            "The Raven and the Fox",
+            "Rama to the Rescue"
+          ]
+        },
+        {
+          "unit": "Friendship",
+          "chapters": [
+            "The Unlikely Best Friends",
+            "A Friend's Prayer",
+            "The Chair"
+          ]
+        },
+        {
+          "unit": "Nurturing Nature",
+          "chapters": [
+            "Neem Baba",
+            "What a Bird Thought",
+            "Spices that Heal Us"
+          ]
+        },
+        {
+          "unit": "Sports and Wellness",
+          "chapters": [
+            "Change of Heart",
+            "The Winner",
+            "Yoga — A Way of Life"
+          ]
+        },
+        {
+          "unit": "Culture and Tradition",
+          "chapters": [
+            "Hamara Bharat — Incredible India!",
+            "The Kites",
+            "Ila Sachani: Embroidering Dreams with Her Feet",
+            "National War Memorial"
+          ]
+        }
+      ]
+    },
+    {
+      "subject": "Hindi",
+      "book": "Malhar",
+      "aliases": [
+        "malhar",
+        "class 6 hindi",
+        "6th hindi"
+      ],
+      "chapters": [
+        "मातृभूमि",
+        "गोल",
+        "पहली बूँद",
+        "हार की जीत",
+        "रहीम के दोहे",
+        "मेरी माँ",
+        "जलाते चलो",
+        "सत्रिया और बिहू नृत्य",
+        "मैया मैं नहिं माखन खायो",
+        "परीक्षा",
+        "चेतक की वीरता",
+        "हिंद महासागर में छोटा-सा हिंदुस्तान",
+        "पेड़ की बात"
+      ]
+    },
+    {
+      "subject": "Sanskrit",
+      "book": "Deepakam",
+      "aliases": [
+        "deepakam",
+        "deepak",
+        "दीपकम्",
+        "class 6 sanskrit",
+        "6th sanskrit"
+      ],
+      "chapters": [
+        "वयं वर्णमालां पठामः",
+        "संयुक्त-व्यञ्जनानि",
+        "एषः कः? एषा का? एतत् किम्?",
+        "अहं च त्वं च",
+        "संख्यागणना ननु सरला",
+        "अहं प्रातः उत्तिष्ठामि",
+        "शूराः वयं धीराः वयम्",
+        "सः एव महान् चित्रकारः",
+        "अतिथिदेवो भव",
+        "बुद्धिः सर्वार्थसाधिका",
+        "यः जानाति सः पण्डितः",
+        "त्वम् आपणं गच्छ",
+        "पृथिव्यां त्रीणि रत्नानि",
+        "आलस्यं हि मनुष्याणां शरीरस्थः महान् रिपुः",
+        "माधवस्य प्रियम् अङ्गम्",
+        "वृक्षाः सत्पुरुषाः इव"
+      ]
+    },
+    {
+      "subject": "Social Science",
+      "book": "Exploring Society: India and Beyond",
+      "aliases": [
+        "social science",
+        "social studies",
+        "sst",
+        "exploring society",
+        "exploring society india and beyond",
+        "class 6 social science",
+        "6th social"
+      ],
+      "chapters": [
+        "Locating Places on the Earth",
+        "Oceans and Continents",
+        "Landforms and Life",
+        "Timeline and Sources of History",
+        "India, That Is Bharat",
+        "The Beginnings of Indian Civilisation",
+        "India's Cultural Roots",
+        "Unity in Diversity, or Many in the One",
+        "Family and Community",
+        "Grassroots Democracy — Part 1: Governance",
+        "Grassroots Democracy — Part 2: Local Government in Rural Areas",
+        "Grassroots Democracy — Part 3: Local Government in Urban Areas",
+        "The Value of Work",
+        "Economic Activities Around Us"
+      ]
+    }
+  ],
+  "officialSources": [
+    "https://ncert.nic.in/textbook.php",
+    "https://ciet.ncert.gov.in/activity/grade6"
+  ]
+}
