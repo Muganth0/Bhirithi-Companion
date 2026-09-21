@@ -11,7 +11,9 @@ const WINDOW_MS = 60_000;
 const MAX_REQUESTS_PER_WINDOW = Number(process.env.MAX_REQUESTS_PER_MINUTE || 30);
 
 const syllabusPath = path.join(process.cwd(), "backend", "syllabus", "class6_ncert_2026_27.json");
+const yogaSourcesPath = path.join(process.cwd(), "backend", "syllabus", "yoga_sources_2026_27.json");
 let class6Syllabus = null;
+let yogaSources = null;
 try {
   class6Syllabus = JSON.parse(fs.readFileSync(syllabusPath, "utf8"));
 } catch (error) {
@@ -121,6 +123,15 @@ function formatSyllabusContext(context) {
   return `\n\nCURRICULUM CONTEXT — Use this as the authoritative Class 6 NCERT 2026-27 reference for syllabus-identification questions. Do not invent chapter names. If the child used a misspelling, silently map it to the matched official book name.\n${JSON.stringify(context)}`;
 }
 
+function looksLikeYoga(message) {
+  return /yoga|yogasana|asmita|khelo india|yoga bharat|yogasanabharat|national yoga olympiad|kvs yoga|yoga competition|yogasana league/i.test(message);
+}
+
+function formatYogaContext() {
+  if (!yogaSources) return "";
+  return "\\n\\nOFFICIAL YOGA SOURCES: " + JSON.stringify(yogaSources.sources);
+}
+
 function looksLikeCurrentAffairs(message) {
   return /current affairs|today('?s)? news|today news|latest news|latest current|prime news|top news|breaking news|news today|what happened today|recent news|headlines today/i.test(message);
 }
@@ -145,8 +156,8 @@ app.post("/v1/chat", async (req, res) => {
       return res.status(400).json({ error: "Chat history is too large." });
     }
 
-    const syllabusContext = getSyllabusContext(message);
-    const shouldSearch = Boolean(useWebSearch) || looksLikeCurrentAffairs(message);
+    const syllabusContext = getSyllabusContext(message);\n    const yogaQuery = looksLikeYoga(message);
+    const shouldSearch = Boolean(useWebSearch) || looksLikeCurrentAffairs(message) || yogaQuery;
     const ai = getGemini();
 
     const contents = history
@@ -173,7 +184,7 @@ Give a short Class 6-friendly answer. Clearly identify that the information is c
         ? [{ role: "user", parts: [{ text: prompt }] }]
         : contents,
       config: {
-        systemInstruction: pandaSystemInstruction(role) + formatSyllabusContext(syllabusContext),
+        systemInstruction: pandaSystemInstruction(role) + formatSyllabusContext(syllabusContext) + formatYogaContext(),
         temperature: 0.7,
         tools: shouldSearch ? [{ googleSearch: {} }] : undefined
       }
