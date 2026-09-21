@@ -107,7 +107,7 @@ Give a short Class 6-friendly answer. Clearly identify that the information is c
       : message;
 
     const response = await ai.models.generateContent({
-      model: process.env.GEMINI_MODEL || "gemini-3.5-flash",
+      model: process.env.GEMINI_MODEL || "gemini-3.8-flash",
       contents: shouldSearch
         ? [{ role: "user", parts: [{ text: prompt }] }]
         : contents,
