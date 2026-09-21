@@ -1,6 +1,5 @@
 package com.bhirithi.companion.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -48,7 +47,7 @@ private val DarkColors = darkColorScheme(
 @Composable
 fun BhirithiTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) DarkColors else LightColors,
+        colorScheme = LightColors,
         content = content
     )
 }
