@@ -23,9 +23,6 @@ import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.*
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -50,59 +47,75 @@ private val sections = listOf(
     Section("Rescue", "🛟")
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BhirithiApp(vm: BhirithiViewModel = viewModel()) {
     val selected by vm.selectedSection.collectAsStateWithLifecycle()
-    val configuration = LocalConfiguration.current
-    val navType = if (configuration.screenWidthDp >= 600) {
-        NavigationSuiteType.NavigationRail
-    } else {
-        NavigationSuiteType.NavigationBar
-    }
 
-    NavigationSuiteScaffold(
-        layoutType = navType,
-        navigationSuiteItems = {
-            sections.forEach { navItem ->
-                item(
-                    selected = selected == navItem.title,
-                    onClick = { vm.selectSection(navItem.title) },
-                    icon = { Text(navItem.emoji) },
-                    label = { Text(navItem.title) }
-                )
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Column {
+                        Text(
+                            "Hi, Bhirithi! 👋",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            when (selected) {
+                                "Panda" -> "Let’s learn with Panda"
+                                "Study" -> "Your learning space"
+                                "Yoga" -> "Train safely with Panda"
+                                "Routine" -> "Your daily rhythm"
+                                "Parents" -> "School-home connection"
+                                "Rescue" -> "Safety and quick help"
+                                else -> "Let’s learn with Panda"
+                            },
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                },
+                actions = {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.secondaryContainer
+                    ) {
+                        Text("🐼", modifier = Modifier.padding(10.dp))
+                    }
+                    Spacer(Modifier.width(12.dp))
+                }
+            )
+        },
+        bottomBar = {
+            NavigationBar(
+                tonalElevation = 4.dp
+            ) {
+                sections.forEach { item ->
+                    NavigationBarItem(
+                        selected = selected == item.title,
+                        onClick = { vm.selectSection(item.title) },
+                        icon = { Text(item.emoji) },
+                        label = { Text(item.title, maxLines = 1) },
+                        alwaysShowLabel = true
+                    )
+                }
             }
         }
-    ) {
-        Scaffold(
-            containerColor = MaterialTheme.colorScheme.background,
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Column {
-                            Text("Hi, Bhirithi! 👋", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                            Text("Let’s learn with Panda", style = MaterialTheme.typography.labelMedium)
-                        }
-                    },
-                    actions = {
-                        Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer) {
-                            Text("🐼", modifier = Modifier.padding(10.dp), style = MaterialTheme.typography.titleMedium)
-                        }
-                        Spacer(Modifier.width(12.dp))
-                    }
-                )
-            }
-        ) { padding ->
-            Box(Modifier.fillMaxSize().padding(padding)) {
-                when (selected) {
-                    "Panda" -> PandaChatScreen(vm)
-                    "Study" -> StudyScreen()
-                    "Yoga" -> YogaScreen()
-                    "Routine" -> RoutineScreen()
-                    "Parents" -> ParentScreen()
-                    "Rescue" -> RescueScreen()
-                    else -> PandaChatScreen(vm)
-                }
+    ) { padding ->
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            when (selected) {
+                "Panda" -> PandaChatScreen(vm)
+                "Study" -> StudyScreen()
+                "Yoga" -> YogaScreen()
+                "Routine" -> RoutineScreen()
+                "Parents" -> ParentScreen()
+                "Rescue" -> RescueScreen()
+                else -> PandaChatScreen(vm)
             }
         }
     }
