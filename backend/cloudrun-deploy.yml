@@ -22,4 +22,4 @@ jobs:
 
       - name: Deploy backend to Cloud Run
         run: |
-          gcloud run deploy bhirithi-gemini-backend             --source backend             --region "${{ secrets.GCP_REGION }}"             --project "${{ secrets.GCP_PROJECT_ID }}"             --allow-unauthenticated             --set-env-vars "GEMINI_MODEL=gemini-3.5-flash,MAX_REQUESTS_PER_MINUTE=30"             --set-env-vars "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}"
+          gcloud run deploy bhirithi-gemini-backend             --source backend             --region "${{ secrets.GCP_REGION }}"             --project "${{ secrets.GCP_PROJECT_ID }}"             --allow-unauthenticated             --set-env-vars "GEMINI_MODEL=gemini-3.8-flash,MAX_REQUESTS_PER_MINUTE=30"             --set-env-vars "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}"
