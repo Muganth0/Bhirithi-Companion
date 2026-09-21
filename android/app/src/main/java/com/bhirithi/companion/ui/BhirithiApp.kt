@@ -50,15 +50,12 @@ private val sections = listOf(
     Section("Rescue", "🛟")
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BhirithiApp(vm: BhirithiViewModel = viewModel()) {
     val selected by vm.selectedSection.collectAsStateWithLifecycle()
     val window = currentWindowAdaptiveInfo()
-    val navType = if (window.windowSizeClass.isExpanded) {
-        NavigationSuiteType.NavigationRail
-    } else {
-        NavigationSuiteType.NavigationBar
-    }
+    val navType = NavigationSuiteScaffoldDefaults.navigationSuiteType(window)
 
     NavigationSuiteScaffold(
         layoutType = navType,
