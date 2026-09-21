@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Sparkles, Smile, ShieldAlert, Heart, Zap, User, Paperclip, Camera, X, FileText, Check, RotateCcw, CameraOff, Sparkle, Mic, MicOff, Volume2, VolumeX, Square, Play } from 'lucide-react';
 import { ChatMessage, PandaRole } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
+import { PandaPipecatVoice, PipecatVoiceStatus } from '../services/pipecatVoice';
 
 interface AttachedFileInfo {
   name: string;
@@ -57,6 +58,10 @@ export default function Chatroom() {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceSupported, setVoiceSupported] = useState(true);
+  const [pipecatStatus, setPipecatStatus] = useState<PipecatVoiceStatus>('idle');
+  const pipecatVoiceRef = useRef<PandaPipecatVoice | null>(null);
+  const pipecatEndpoint = (import.meta.env.VITE_PIPECAT_BOT_START_URL || '').trim();
+  const pipecatConfigured = Boolean(pipecatEndpoint);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const lastSpokenTextRef = useRef<string>('');
   const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -92,7 +97,7 @@ export default function Chatroom() {
   };
 
   const speakPanda = (text: string) => {
-    if (!voiceEnabled || !('speechSynthesis' in window) || !text.trim()) return;
+    if (!voiceEnabled || pipecatVoiceRef.current?.isConnected || !('speechSynthesis' in window) || !text.trim()) return;
     window.speechSynthesis.cancel();
 
     const cleanText = text.replace(/https?:\/\/\S+/g, '').trim();
@@ -136,7 +141,51 @@ export default function Chatroom() {
   };
 
   const replayLastPandaVoice = () => {
+    if (pipecatVoiceRef.current?.isConnected) return;
     if (lastSpokenTextRef.current) speakPanda(lastSpokenTextRef.current);
+  };
+
+  const togglePipecatVoice = async () => {
+    if (!pipecatConfigured) {
+      setMessages(prev => [...prev, {
+        id: 'pipecat-config-' + Date.now(),
+        sender: 'panda',
+        text: '🐼 Panda Live Voice is ready to be connected, but its Pipecat bot endpoint is not configured yet. I will keep using my browser voice until the realtime voice server is connected.',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        role: 'friend'
+      }]);
+      return;
+    }
+
+    if (pipecatVoiceRef.current?.isConnected) {
+      await pipecatVoiceRef.current.disconnect();
+      return;
+    }
+
+    const controller = new PandaPipecatVoice({
+      endpoint: pipecatEndpoint,
+      onStatus: (status) => {
+        setPipecatStatus(status);
+        if (status === 'connected') setVoiceEnabled(true);
+      },
+      onUserTranscript: (text) => {
+        setInput(text);
+        if (/\bhey\s+panda\b/i.test(text)) setTimeout(fetchMorningBulletin, 250);
+      },
+      onBotTranscript: (text) => {
+        lastSpokenTextRef.current = text;
+        setIsSpeaking(true);
+        window.setTimeout(() => setIsSpeaking(false), Math.max(1200, Math.min(9000, text.length * 45)));
+      }
+    });
+
+    pipecatVoiceRef.current = controller;
+    try {
+      await controller.connect();
+    } catch {
+      pipecatVoiceRef.current = null;
+      setPipecatStatus('error');
+    }
   };
 
   const fetchMorningBulletin = async () => {
@@ -272,6 +321,7 @@ ${sections.join('\n\n')}
     return () => {
       recognitionRef.current?.stop();
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      pipecatVoiceRef.current?.disconnect().catch(() => undefined);
     };
   }, []);
 
@@ -648,6 +698,16 @@ ${sections.join('\n\n')}
 
             <button
               type="button"
+              onClick={togglePipecatVoice}
+              className={`flex items-center gap-1.5 font-bold text-xs px-3 py-2 rounded-full cursor-pointer shadow-sm transition active:scale-95 border-2 ${pipecatStatus === 'connected' ? 'bg-[#EEF4FF] text-[#3158A6] border-[#BFD0FF]' : 'bg-white text-[#6C625B] border-[#E8DED5]'}`}
+              title={pipecatConfigured ? 'Connect Panda to the realtime Pipecat voice engine' : 'Pipecat endpoint is not configured; browser voice remains the fallback'}
+            >
+              <Mic className={`w-3.5 h-3.5 ${pipecatStatus === 'connected' ? 'animate-pulse' : ''}`} />
+              <span>{pipecatStatus === 'connected' ? 'Live Voice' : pipecatStatus === 'connecting' ? 'Connecting…' : 'Try Live'}</span>
+            </button>
+
+            <button
+              type="button"
               onClick={replayLastPandaVoice}
               disabled={!lastSpokenTextRef.current || !voiceSupported}
               className="p-2 bg-[#FFF4EC] hover:bg-[#FFE6D3] disabled:opacity-40 text-[#FF6A1A] rounded-full cursor-pointer transition active:scale-95"
@@ -692,7 +752,7 @@ ${sections.join('\n\n')}
         <div className="mt-2 flex items-center justify-between gap-2 px-2 text-[9px] font-bold uppercase tracking-wider">
           <div className={`flex items-center gap-1.5 ${isListening ? 'text-rose-500' : isSpeaking ? 'text-emerald-600' : 'text-[#A68F81]'}`}>
             {isListening ? <Mic className="w-3 h-3 animate-pulse" /> : isSpeaking ? <Volume2 className="w-3 h-3 animate-pulse" /> : <Sparkle className="w-3 h-3" />}
-            <span>{isListening ? 'Listening to Bhirithi…' : isSpeaking ? 'Panda is speaking…' : voiceEnabled ? 'Voice ready' : 'Voice muted'}</span>
+            <span>{isListening ? 'Listening to Bhirithi…' : isSpeaking ? 'Panda is speaking…' : pipecatStatus === 'connected' ? 'Panda Live Voice connected' : voiceEnabled ? 'Voice ready' : 'Voice muted'}</span>
           </div>
           {!voiceSupported && (
             <span className="text-amber-600 normal-case tracking-normal">Mic voice input is not supported in this browser</span>
