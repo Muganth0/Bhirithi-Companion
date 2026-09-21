@@ -23,8 +23,7 @@ import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.*
-import androidx.compose.material3.adaptive.WindowWidthSizeClass
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.*
@@ -55,8 +54,8 @@ private val sections = listOf(
 @Composable
 fun BhirithiApp(vm: BhirithiViewModel = viewModel()) {
     val selected by vm.selectedSection.collectAsStateWithLifecycle()
-    val window = currentWindowAdaptiveInfo()
-    val navType = if (window.windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
+    val configuration = LocalConfiguration.current
+    val navType = if (configuration.screenWidthDp >= 600) {
         NavigationSuiteType.NavigationRail
     } else {
         NavigationSuiteType.NavigationBar
