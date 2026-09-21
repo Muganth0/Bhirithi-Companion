@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "Official-source update registry for Bhirithi Yoga and Yogasana competition information",
+  "updatePolicy": "Refresh daily; never replace verified historical results with unverified claims.",
+  "sources": [
+    {
+      "name": "ASMITA Khelo India League Calendar",
+      "url": "https://asmita.kheloindia.gov.in/calendar",
+      "scope": ["ASMITA women leagues", "league dates", "venues", "sports updates"]
+    },
+    {
+      "name": "Yogasana Bharat Official Website",
+      "url": "https://www.yogasanabharat.com/",
+      "scope": ["Yogasana competitions", "ASMITA Yogasana Women's League", "national events", "selection trials", "coaches and judges", "results"]
+    },
+    {
+      "name": "Yogasana Bharat Results",
+      "url": "https://www.yogasanabharat.com/results",
+      "scope": ["official Yogasana results", "ASMITA zone results", "selection-trial results"]
+    },
+    {
+      "name": "KVS Yoga",
+      "url": "https://kvsangathan.nic.in/en/yoga/",
+      "scope": ["KVS yoga", "National Yoga Olympiad", "KVS yoga achievements", "International Yoga Day"]
+    },
+    {
+      "name": "KVS Sports",
+      "url": "https://rohyderabad.kvs.gov.in/en/sports/",
+      "scope": ["KVS sports and yoga participation", "age groups", "competition structure"]
+    }
+  ],
+  "competitionTaxonomy": {
+    "yogasanaBharat": [
+      "Traditional Yogasana",
+      "Artistic Yogasana (Single)",
+      "Artistic Yogasana (Pair)",
+      "Rhythmic Yogasana (Pair)",
+      "Artistic Yogasana (Group)"
+    ],
+    "kvs": [
+      "Traditional Yogasana",
+      "Artistic Yogasana",
+      "Rhythmic Yogasana",
+      "KVS school/cluster/sub-regional/regional/national competitions",
+      "National Yoga Olympiad (NCERT)"
+    ]
+  },
+  "studentSafety": "For children, show age/category eligibility only from official rules and never encourage unsafe poses or competition participation without teacher/coach/parent supervision."
+}
