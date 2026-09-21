@@ -185,6 +185,41 @@
         "The Value of Work",
         "Economic Activities Around Us"
       ]
+    },
+    {
+      "subject": "Arts",
+      "book": "Kriti",
+      "aliases": [
+        "kriti",
+        "कृति",
+        "class 6 arts",
+        "6th arts"
+      ],
+      "note": "NCERT Class 6 Arts textbook/resource."
+    },
+    {
+      "subject": "Physical Education and Well-being",
+      "book": "Khel Yatra",
+      "aliases": [
+        "khel yatra",
+        "खेल यात्रा",
+        "physical education",
+        "pe",
+        "class 6 pe",
+        "6th pe"
+      ],
+      "note": "NCERT Class 6 Physical Education and Well-being textbook/resource."
+    },
+    {
+      "subject": "Vocational Education",
+      "book": "Kaushal Bodh",
+      "aliases": [
+        "kaushal bodh",
+        "कौशल बोध",
+        "vocational education",
+        "class 6 vocational"
+      ],
+      "note": "NCERT Class 6 Vocational Education activity book/resource."
     }
   ],
   "officialSources": [
