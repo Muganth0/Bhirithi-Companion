@@ -47,6 +47,7 @@ private val sections = listOf(
     Section("Rescue", "🛟")
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BhirithiApp(vm: BhirithiViewModel = viewModel()) {
     val selected by vm.selectedSection.collectAsStateWithLifecycle()
