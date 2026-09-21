@@ -6,6 +6,7 @@ import com.bhirithi.companion.data.BhirithiRepository
 import com.bhirithi.companion.data.NetworkBhirithiRepository
 import com.bhirithi.companion.data.PandaMessage
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -13,8 +14,8 @@ import kotlinx.coroutines.launch
 class BhirithiViewModel(
     private val repository: BhirithiRepository = NetworkBhirithiRepository()
 ) : ViewModel() {
-    val selectedSection: StateFlow<String> =
-        repository.selectedSection.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "Panda")
+    private val _selectedSection = kotlinx.coroutines.flow.MutableStateFlow("Panda")
+    val selectedSection: StateFlow<String> = _selectedSection.asStateFlow()
 
     val messages: StateFlow<List<PandaMessage>> =
         repository.messages.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -23,6 +24,7 @@ class BhirithiViewModel(
     val errorMessage = kotlinx.coroutines.flow.MutableStateFlow<String?>(null)
 
     fun selectSection(section: String) {
+        _selectedSection.value = section
         viewModelScope.launch { repository.selectSection(section) }
     }
 
