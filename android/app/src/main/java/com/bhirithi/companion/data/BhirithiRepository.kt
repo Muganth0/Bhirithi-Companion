@@ -48,6 +48,8 @@ class NetworkBhirithiRepository(
     }
 
     override suspend fun sendPandaMessage(message: String, role: String): Result<String> = withContext(Dispatchers.IO) {
+        val student = PandaMessage("student-${System.currentTimeMillis()}", Sender.STUDENT, message)
+        chatMessages.value = chatMessages.value + student
         try {
             val connection = (URL("${baseUrl.trimEnd('/')}/api/chat").openConnection() as HttpURLConnection).apply {
                 requestMethod = "POST"
@@ -86,7 +88,7 @@ class NetworkBhirithiRepository(
 
             val reply = JSONObject(responseText).optString("text").trim()
             if (reply.isBlank()) return@withContext Result.failure(IllegalStateException("Panda returned an empty reply."))
-
+            chatMessages.value = chatMessages.value + PandaMessage("panda-${System.currentTimeMillis()}", Sender.PANDA, reply)
             Result.success(reply)
         } catch (e: Exception) {
             Result.failure(e)
