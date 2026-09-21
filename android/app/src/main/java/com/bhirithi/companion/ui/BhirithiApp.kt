@@ -9,7 +9,11 @@ import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -69,8 +73,22 @@ fun BhirithiApp(vm: BhirithiViewModel = viewModel()) {
         }
     ) {
         Scaffold(
+            containerColor = MaterialTheme.colorScheme.background,
             topBar = {
-                TopAppBar(title = { Text("Bhirithi Companion 🐼") })
+                TopAppBar(
+                    title = {
+                        Column {
+                            Text("Hi, Bhirithi! 👋", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                            Text("Let’s learn with Panda", style = MaterialTheme.typography.labelMedium)
+                        }
+                    },
+                    actions = {
+                        Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer) {
+                            Text("🐼", modifier = Modifier.padding(10.dp), style = MaterialTheme.typography.titleMedium)
+                        }
+                        Spacer(Modifier.width(12.dp))
+                    }
+                )
             }
         ) { padding ->
             Box(Modifier.fillMaxSize().padding(padding)) {
@@ -190,13 +208,44 @@ private fun PandaChatScreen(vm: BhirithiViewModel) {
         Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Card(Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp)) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text("🐼 Panda Chat", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                Text(
-                    "Cheerful Indian-English Panda voice • text chat • voice input",
-                    style = MaterialTheme.typography.bodyMedium
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(28.dp))
+                .background(
+                    Brush.linearGradient(
+                        listOf(
+                            MaterialTheme.colorScheme.primaryContainer,
+                            MaterialTheme.colorScheme.secondaryContainer,
+                            MaterialTheme.colorScheme.tertiaryContainer
+                        )
+                    )
                 )
+                .padding(18.dp)
+        ) {
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    modifier = Modifier.size(68.dp),
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text("🐼", style = MaterialTheme.typography.headlineMedium)
+                    }
+                }
+                Spacer(Modifier.width(14.dp))
+                Column(Modifier.weight(1f)) {
+                    Text("Panda Chat", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                    Text("Ask, talk, learn and explore together.", style = MaterialTheme.typography.bodyMedium)
+                    Spacer(Modifier.height(8.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        AssistChip(onClick = { input = "Give me a fun quiz!" }, label = { Text("🎯 Quiz") })
+                        AssistChip(onClick = { input = "Teach me something fun!" }, label = { Text("✨ Learn") })
+                    }
+                }
             }
         }
 
