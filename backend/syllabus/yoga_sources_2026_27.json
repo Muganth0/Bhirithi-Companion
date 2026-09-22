@@ -6,27 +6,63 @@
     {
       "name": "ASMITA Khelo India League Calendar",
       "url": "https://asmita.kheloindia.gov.in/calendar",
-      "scope": ["ASMITA women leagues", "league dates", "venues", "sports updates"]
+      "scope": [
+        "ASMITA women leagues",
+        "league dates",
+        "venues",
+        "sports updates"
+      ],
+      "lastCheckedUtc": "2026-09-22T06:19:32.857960+00:00",
+      "httpStatus": 200
     },
     {
       "name": "Yogasana Bharat Official Website",
       "url": "https://www.yogasanabharat.com/",
-      "scope": ["Yogasana competitions", "ASMITA Yogasana Women's League", "national events", "selection trials", "coaches and judges", "results"]
+      "scope": [
+        "Yogasana competitions",
+        "ASMITA Yogasana Women's League",
+        "national events",
+        "selection trials",
+        "coaches and judges",
+        "results"
+      ],
+      "lastCheckedUtc": "2026-09-22T06:19:32.857960+00:00",
+      "httpStatus": 200
     },
     {
       "name": "Yogasana Bharat Results",
       "url": "https://www.yogasanabharat.com/results",
-      "scope": ["official Yogasana results", "ASMITA zone results", "selection-trial results"]
+      "scope": [
+        "official Yogasana results",
+        "ASMITA zone results",
+        "selection-trial results"
+      ],
+      "lastCheckedUtc": "2026-09-22T06:19:32.857960+00:00",
+      "httpStatus": 200
     },
     {
       "name": "KVS Yoga",
       "url": "https://kvsangathan.nic.in/en/yoga/",
-      "scope": ["KVS yoga", "National Yoga Olympiad", "KVS yoga achievements", "International Yoga Day"]
+      "scope": [
+        "KVS yoga",
+        "National Yoga Olympiad",
+        "KVS yoga achievements",
+        "International Yoga Day"
+      ],
+      "lastCheckedUtc": "2026-09-22T06:19:32.857960+00:00",
+      "httpStatus": null,
+      "lastError": "<urlopen error _ssl.c:983: The handshake operation timed out>"
     },
     {
       "name": "KVS Sports",
       "url": "https://rohyderabad.kvs.gov.in/en/sports/",
-      "scope": ["KVS sports and yoga participation", "age groups", "competition structure"]
+      "scope": [
+        "KVS sports and yoga participation",
+        "age groups",
+        "competition structure"
+      ],
+      "lastCheckedUtc": "2026-09-22T06:19:32.857960+00:00",
+      "httpStatus": 200
     }
   ],
   "competitionTaxonomy": {
@@ -45,5 +81,6 @@
       "National Yoga Olympiad (NCERT)"
     ]
   },
-  "studentSafety": "For children, show age/category eligibility only from official rules and never encourage unsafe poses or competition participation without teacher/coach/parent supervision."
+  "studentSafety": "For children, show age/category eligibility only from official rules and never encourage unsafe poses or competition participation without teacher/coach/parent supervision.",
+  "lastRefreshUtc": "2026-09-22T06:19:32.857960+00:00"
 }
