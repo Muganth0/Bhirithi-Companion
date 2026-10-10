@@ -12,7 +12,7 @@
         "venues",
         "sports updates"
       ],
-      "lastCheckedUtc": "2026-10-09T07:27:47.511202+00:00",
+      "lastCheckedUtc": "2026-10-10T07:14:13.948977+00:00",
       "httpStatus": 200
     },
     {
@@ -26,7 +26,7 @@
         "coaches and judges",
         "results"
       ],
-      "lastCheckedUtc": "2026-10-09T07:27:47.511202+00:00",
+      "lastCheckedUtc": "2026-10-10T07:14:13.948977+00:00",
       "httpStatus": 200
     },
     {
@@ -37,7 +37,7 @@
         "ASMITA zone results",
         "selection-trial results"
       ],
-      "lastCheckedUtc": "2026-10-09T07:27:47.511202+00:00",
+      "lastCheckedUtc": "2026-10-10T07:14:13.948977+00:00",
       "httpStatus": 200
     },
     {
@@ -49,7 +49,7 @@
         "KVS yoga achievements",
         "International Yoga Day"
       ],
-      "lastCheckedUtc": "2026-10-09T07:27:47.511202+00:00",
+      "lastCheckedUtc": "2026-10-10T07:14:13.948977+00:00",
       "httpStatus": null,
       "lastError": "<urlopen error timed out>"
     },
@@ -61,7 +61,7 @@
         "age groups",
         "competition structure"
       ],
-      "lastCheckedUtc": "2026-10-09T07:27:47.511202+00:00",
+      "lastCheckedUtc": "2026-10-10T07:14:13.948977+00:00",
       "httpStatus": 200
     }
   ],
@@ -82,5 +82,5 @@
     ]
   },
   "studentSafety": "For children, show age/category eligibility only from official rules and never encourage unsafe poses or competition participation without teacher/coach/parent supervision.",
-  "lastRefreshUtc": "2026-10-09T07:27:47.511202+00:00"
+  "lastRefreshUtc": "2026-10-10T07:14:13.948977+00:00"
 }
