@@ -12,7 +12,7 @@
         "venues",
         "sports updates"
       ],
-      "lastCheckedUtc": "2026-10-23T06:04:46.904716+00:00",
+      "lastCheckedUtc": "2026-10-24T05:58:48.066097+00:00",
       "httpStatus": null,
       "lastError": "<urlopen error timed out>"
     },
@@ -27,7 +27,7 @@
         "coaches and judges",
         "results"
       ],
-      "lastCheckedUtc": "2026-10-23T06:04:46.904716+00:00",
+      "lastCheckedUtc": "2026-10-24T05:58:48.066097+00:00",
       "httpStatus": 200
     },
     {
@@ -38,7 +38,7 @@
         "ASMITA zone results",
         "selection-trial results"
       ],
-      "lastCheckedUtc": "2026-10-23T06:04:46.904716+00:00",
+      "lastCheckedUtc": "2026-10-24T05:58:48.066097+00:00",
       "httpStatus": 200
     },
     {
@@ -50,7 +50,7 @@
         "KVS yoga achievements",
         "International Yoga Day"
       ],
-      "lastCheckedUtc": "2026-10-23T06:04:46.904716+00:00",
+      "lastCheckedUtc": "2026-10-24T05:58:48.066097+00:00",
       "httpStatus": null,
       "lastError": "<urlopen error timed out>"
     },
@@ -62,8 +62,9 @@
         "age groups",
         "competition structure"
       ],
-      "lastCheckedUtc": "2026-10-23T06:04:46.904716+00:00",
-      "httpStatus": 200
+      "lastCheckedUtc": "2026-10-24T05:58:48.066097+00:00",
+      "httpStatus": null,
+      "lastError": "<urlopen error timed out>"
     }
   ],
   "competitionTaxonomy": {
@@ -83,5 +84,5 @@
     ]
   },
   "studentSafety": "For children, show age/category eligibility only from official rules and never encourage unsafe poses or competition participation without teacher/coach/parent supervision.",
-  "lastRefreshUtc": "2026-10-23T06:04:46.904716+00:00"
+  "lastRefreshUtc": "2026-10-24T05:58:48.066097+00:00"
 }
