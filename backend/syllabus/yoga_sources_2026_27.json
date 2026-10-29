@@ -12,7 +12,7 @@
         "venues",
         "sports updates"
       ],
-      "lastCheckedUtc": "2026-10-28T06:53:56.728070+00:00",
+      "lastCheckedUtc": "2026-10-29T07:12:06.886999+00:00",
       "httpStatus": 200,
       "lastError": "<urlopen error timed out>"
     },
@@ -27,7 +27,7 @@
         "coaches and judges",
         "results"
       ],
-      "lastCheckedUtc": "2026-10-28T06:53:56.728070+00:00",
+      "lastCheckedUtc": "2026-10-29T07:12:06.886999+00:00",
       "httpStatus": 200
     },
     {
@@ -38,7 +38,7 @@
         "ASMITA zone results",
         "selection-trial results"
       ],
-      "lastCheckedUtc": "2026-10-28T06:53:56.728070+00:00",
+      "lastCheckedUtc": "2026-10-29T07:12:06.886999+00:00",
       "httpStatus": 200
     },
     {
@@ -50,7 +50,7 @@
         "KVS yoga achievements",
         "International Yoga Day"
       ],
-      "lastCheckedUtc": "2026-10-28T06:53:56.728070+00:00",
+      "lastCheckedUtc": "2026-10-29T07:12:06.886999+00:00",
       "httpStatus": 200,
       "lastError": "<urlopen error timed out>"
     },
@@ -62,7 +62,7 @@
         "age groups",
         "competition structure"
       ],
-      "lastCheckedUtc": "2026-10-28T06:53:56.728070+00:00",
+      "lastCheckedUtc": "2026-10-29T07:12:06.886999+00:00",
       "httpStatus": 200,
       "lastError": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1000)>"
     }
@@ -84,5 +84,5 @@
     ]
   },
   "studentSafety": "For children, show age/category eligibility only from official rules and never encourage unsafe poses or competition participation without teacher/coach/parent supervision.",
-  "lastRefreshUtc": "2026-10-28T06:53:56.728070+00:00"
+  "lastRefreshUtc": "2026-10-29T07:12:06.886999+00:00"
 }
